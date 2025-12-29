@@ -64,24 +64,29 @@
             <table id="assetsTable">
                 <thead>
                     <tr>
-                        <th>財產編號</th>
+                        <th>深耕財產編號</th>
+                        <th>醫院財產編號</th>
                         <th>財產名稱</th>
                         <th>規格/型號</th>
                         <th>數量</th>
                         <th>財產單位</th>
                         <th>購入/申請日期</th>
                         <th>取得日期</th>
-                        <th>取得金額</th>
+                        <th>耐用年限</th>
+                        <th>取得成本</th>
                         <th>保管單位</th>
                         <th>保管人</th>
                         <th>所在地點</th>
                         <th>供應商</th>
+                        <th>保固合約-廠商</th>
+                        <th>保固合約-期間</th>
+                        <th>備註</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody id="assetsTableBody">
                     <tr>
-                        <td colspan="13" class="loading">載入中...</td>
+                        <td colspan="18" class="loading">載入中...</td>
                     </tr>
                 </tbody>
             </table>
@@ -99,45 +104,56 @@
                 <form id="assetForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="assetNo">財產編號 *</label>
-                            <input type="text" id="assetNo" required>
+                            <label for="deepAssetNo">深耕財產編號</label>
+                            <input type="text" id="deepAssetNo">
                         </div>
+                        <div class="form-group">
+                            <label for="hospitalAssetNo">醫院財產編號 *</label>
+                            <input type="text" id="hospitalAssetNo" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="assetName">財產名稱 *</label>
                             <input type="text" id="assetName" required>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="specification">規格/型號</label>
                             <input type="text" id="specification">
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="quantity">數量</label>
                             <input type="number" id="quantity" min="1" value="1">
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="unit">財產單位</label>
                             <input type="text" id="unit">
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="purchaseDate">購入/申請日期</label>
                             <input type="text" id="purchaseDate" placeholder="114/10/20">
+                        </div>
+                        <div class="form-group">
+                            <label for="acquireDate">取得日期</label>
+                            <input type="text" id="acquireDate" placeholder="114/10/20">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="acquireDate">取得日期</label>
-                            <input type="text" id="acquireDate" placeholder="114/10/20">
+                            <label for="usefulLife">耐用年限</label>
+                            <input type="text" id="usefulLife" placeholder="例如：5年">
                         </div>
                         <div class="form-group">
-                            <label for="amount">取得金額</label>
-                            <input type="number" id="amount" min="0">
+                            <label for="cost">取得成本</label>
+                            <input type="number" id="cost" min="0">
                         </div>
                     </div>
                     
@@ -160,6 +176,24 @@
                         <div class="form-group">
                             <label for="supplier">供應商</label>
                             <input type="text" id="supplier">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="warrantyVendor">保固合約-廠商</label>
+                            <input type="text" id="warrantyVendor">
+                        </div>
+                        <div class="form-group">
+                            <label for="warrantyPeriod">保固合約-期間</label>
+                            <input type="text" id="warrantyPeriod" placeholder="例如：2年">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="notes">備註</label>
+                            <input type="text" id="notes">
                         </div>
                     </div>
                     

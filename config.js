@@ -9,20 +9,18 @@
 
 const CONFIG = {
     // Google Sheets 試算表 ID（從網址中取得）
-    // 例如：https://docs.google.com/spreadsheets/d/【這裡的ID】/edit
-    SPREADSHEET_ID: 'YOUR_SPREADSHEET_ID',
+    SPREADSHEET_ID: '1x32_JhOr0BTeoiS3gaw48Le8mJtiwd597DOjKyInoeU',
     
-    // Google API 金鑰
-    API_KEY: 'YOUR_API_KEY',
+    // Google Apps Script Web App URL（需要部署後取得）
+    // 請在 Google Sheets 中建立 Apps Script 並部署為網路應用程式
+    WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbym9gAWVk9lxahCHojxDnppIQ9HDxB-caJJ-lE_yBCFsXYVekpVeSFdKi5LOgsuS6l9/exec',
+    
+    // 工作表 GID
+    SHEET_GID: '1952399840',
     
     // 工作表名稱
-    SHEET_NAME: '財產清單',
-    
-    // API 端點
-    get API_URL() {
-        return `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${this.SHEET_NAME}?key=${this.API_KEY}`;
-    }
+    SHEET_NAME: '財產清單'
 };
 
 // 如果不想使用 Google Sheets，也可以使用本地儲存
-const USE_LOCAL_STORAGE = true; // 設為 true 使用本地儲存，false 使用 Google Sheets
+const USE_LOCAL_STORAGE = false; // 設為 true 使用本地儲存，false 使用 Google Sheets
