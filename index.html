@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>財產管理系統 | Asset Management</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div class="app-layout">
+
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h2>資產總覽</h2>
+                    <span class="subtitle">管理與追蹤所有固定資產</span>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="refreshBtn" class="btn btn-secondary">
+                        <i class="fa-solid fa-rotate-right"></i> 重新整理
+                    </button>
+                    <button id="syncBtn" class="btn btn-info">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> 同步雲端
+                    </button>
+                    <button id="exportBtn" class="btn btn-success">
+                        <i class="fa-solid fa-file-excel"></i> 匯出 Excel
+                    </button>
+                    <button id="addBtn" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i> 新增資產
+                    </button>
+                </div>
+            </header>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon bg-blue">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">總資產數量</span>
+                        <h3 class="stat-value" id="totalAssets">0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-green">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">總金額價值</span>
+                        <h3 class="stat-value" id="totalValue">0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-purple">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">資產項目數</span>
+                        <h3 class="stat-value" id="totalItems">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Search -->
+            <div class="controls-section card">
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="搜尋編號、名稱、保管人...">
+                </div>
+                <div class="filters-wrapper">
+                    <div class="select-wrapper">
+                        <i class="fa-solid fa-filter"></i>
+                        <select id="filterUnit" class="filter-select">
+                            <option value="">全部財產單位</option>
+                        </select>
+                    </div>
+                    <div class="select-wrapper">
+                        <i class="fa-solid fa-user-tag"></i>
+                        <select id="filterKeeper" class="filter-select">
+                            <option value="">全部保管人</option>
+                        </select>
+                    </div>
+                    <div class="select-wrapper">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <select id="filterLocation" class="filter-select">
+                            <option value="">全部地點</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-card card">
+                <div class="table-responsive">
+                    <table id="assetsTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">資產資訊</th>
+                                <th style="width: 20%">編號資訊</th>
+                                <th style="width: 20%">保管狀態</th>
+                                <th style="width: 15%">取得資訊</th>
+                                <th style="width: 10%">狀態</th>
+                                <th style="width: 10%" class="text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assetsTableBody">
+                            <tr>
+                                <td colspan="11" class="loading-state">
+                                    <div class="spinner"></div>
+                                    <p>正在載入資產資料...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer class="app-footer">
+                <p>&copy; 2025 Asset Management System. Version 1.0.0</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal Form -->
+    <div id="assetModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">新增資產</h2>
+                    <button class="close-btn close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="assetForm">
+                        <div class="form-section-title">基本資訊</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="deepAssetNo">深耕財產編號</label>
+                                <input type="text" id="deepAssetNo" class="form-control" placeholder="輸入編號">
+                            </div>
+                            <div class="form-group">
+                                <label for="hospitalAssetNo">醫院財產編號 <span class="required">*</span></label>
+                                <input type="text" id="hospitalAssetNo" class="form-control" required
+                                    placeholder="輸入編號">
+                            </div>
+                            <div class="form-group span-2">
+                                <label for="assetName">財產名稱 <span class="required">*</span></label>
+                                <input type="text" id="assetName" class="form-control" required
+                                    placeholder="例如：辦公桌、電腦主機...">
+                            </div>
+                            <div class="form-group">
+                                <label for="specification">規格/型號</label>
+                                <input type="text" id="specification" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">數量</label>
+                                <input type="number" id="quantity" class="form-control" min="1" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="unit">財產單位</label>
+                                <input type="text" id="unit" class="form-control" list="unitList">
+                                <datalist id="unitList">
+                                    <option value="工務">
+                                    <option value="管理課">
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">取得與成本</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="purchaseDate">購入/申請日期</label>
+                                <input type="text" id="purchaseDate" class="form-control" placeholder="YYYY/MM/DD">
+                            </div>
+                            <div class="form-group">
+                                <label for="acquireDate">取得日期</label>
+                                <input type="text" id="acquireDate" class="form-control" placeholder="YYYY/MM/DD">
+                            </div>
+                            <div class="form-group">
+                                <label for="cost">取得成本</label>
+                                <div class="input-prefix">
+                                    <span>$</span>
+                                    <input type="number" id="cost" class="form-control" min="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="usefulLife">耐用年限</label>
+                                <input type="text" id="usefulLife" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">保管與位置</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="department">保管單位</label>
+                                <input type="text" id="department" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="keeper">保管人</label>
+                                <input type="text" id="keeper" class="form-control">
+                            </div>
+                            <div class="form-group span-2">
+                                <label for="location">所在地點</label>
+                                <input type="text" id="location" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">供應商與保固</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="supplier">供應商</label>
+                                <input type="text" id="supplier" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="warrantyVendor">保固廠商</label>
+                                <input type="text" id="warrantyVendor" class="form-control">
+                            </div>
+                            <div class="form-group span-2">
+                                <label for="warrantyPeriod">保固期間</label>
+                                <input type="text" id="warrantyPeriod" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">其他</div>
+                        <div class="form-group full-width">
+                            <label for="notes">備註</label>
+                            <textarea id="notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-ghost" id="cancelBtn">取消</button>
+                            <button type="submit" class="btn btn-primary">儲存變更</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 同步確認對話框 -->
+    <div id="syncModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h2>確認同步</h2>
+                    <button class="close-btn close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fa-solid fa-cloud-arrow-up"
+                            style="font-size: 48px; color: var(--primary); margin-bottom: 16px;"></i>
+                        <p style="font-size: 1.1em; margin-bottom: 8px;">確定要執行雲端同步嗎？</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9em; line-height: 1.5;">
+                            ⚠️ 這將會以目前的應用程式資料<strong style="color: var(--danger);">「覆蓋」</strong>雲端試算表中的內容。<br>
+                            此動作無法復原。
+                        </p>
+                    </div>
+                    <div class="form-actions"
+                        style="justify-content: center; gap: 16px; margin-top: 0; padding-top: 20px;">
+                        <button class="btn btn-secondary close-modal" style="width: 120px;">取消</button>
+                        <button id="confirmSyncBtn" class="btn btn-primary" style="width: 120px;">確認同步</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 結果訊息對話框 (Result Modal) -->
+    <div id="resultModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h2 id="resultTitle">操作結果</h2>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div id="resultIcon" style="font-size: 48px; margin-bottom: 16px;"></div>
+                        <p id="resultMessage" style="font-size: 1.1em; line-height: 1.5; white-space: pre-wrap;"></p>
+                    </div>
+                    <div class="form-actions" style="justify-content: center; margin-top: 0; padding-top: 20px;">
+                        <button id="resultOkBtn" class="btn btn-primary" style="width: 120px;">確定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
